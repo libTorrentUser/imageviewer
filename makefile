@@ -46,13 +46,13 @@ endif
 
 CXX_DEP_FLAGS := -MMD 
 
-                   
+
+#SRC_FILES =$(foreach f, $(SRC_FILE_NAMES), $(SRC_DIR)/$f)
 SRC_IMAGEVIEWER := \
 	../src/imageviewer/main.cpp
 
-SRC_FILES =$(foreach f, $(SRC_FILE_NAMES), $(SRC_DIR)/$f)
-
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_FILES))
+OBJ_IMAGEVIEWER := $(patsubst ../src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_IMAGEVIEWER))
+$(info OBJ_IMAGEVIEWER=$(OBJ_IMAGEVIEWER))
 
 DEP_FILES := $(subst .o,.d, $(OBJ_FILES))
 #$(info OBJ_FILES=$(OBJ_FILES))
