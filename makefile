@@ -51,12 +51,11 @@ CXX_DEP_FLAGS := -MMD
 SRC_IMAGEVIEWER := \
 	../src/imageviewer/main.cpp
 
-OBJ_IMAGEVIEWER := $(patsubst ../src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_IMAGEVIEWER))
+OBJ_IMAGEVIEWER := $(patsubst ../src/%.cpp, $(DIR_OBJ)/%.o, $(SRC_IMAGEVIEWER))
+DEP_IMAGEVIEWER := $(subst .o,.d, $(OBJ_IMAGEVIEWER))
+$(info SRC_IMAGEVIEWER=$(SRC_IMAGEVIEWER))
 $(info OBJ_IMAGEVIEWER=$(OBJ_IMAGEVIEWER))
-
-DEP_FILES := $(subst .o,.d, $(OBJ_FILES))
-#$(info OBJ_FILES=$(OBJ_FILES))
-#$(info DEP_FILES=$(DEP_FILES))
+$(info DEP_IMAGEVIEWER=$(DEP_IMAGEVIEWER))
 
 
 ################################################################################
@@ -64,14 +63,11 @@ DEP_FILES := $(subst .o,.d, $(OBJ_FILES))
 ################################################################################
 
 # makes everything
-all: $(EXE)
+all: imageviewer
 
 # makes the executable
-$(EXE): $(EXE_PATH)
-
-# the executable requires all object files
-$(EXE_PATH): $(OBJ_FILES)
-	$(CXX) $(CXX_FLAGS) $^ $(LINK_FLAGS_EXTRA) $(LINK_FLAGS) -o "$(BIN)/$(EXE)"
+imageviewer: $(OBJ_IMAGEVIEWER)
+	$(CXX) $(CXX_FLAGS) $^ $(LINK_FLAGS) $(LINK_FLAGS_EXTRA) -o "$(DIR_BIN)/imageviewer"
 
 # each object file requires the compilation of its respective source file
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
@@ -79,9 +75,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # deletes all binaries and temporaries
 clean:
-	-rm -f "$(EXE_PATH)"
-	-rm -rf "$(OBJ_DIR)/"*
-	-rm -rf "$(DEP_DIR)/"*
+	-rm -rf "$(DIR_OUT)"
 
 
 ################################################################################
@@ -93,15 +87,7 @@ clean:
 # because the command will be called only once
 $(shell mkdir -p $(BIN))
 
-OBJ_DIR_ALL := $(dir $(OBJ_FILES))
-ifneq ($(OBJ_DIR_ALL), )
-$(shell mkdir -p $(OBJ_DIR_ALL))
-endif
 
-DEP_DIR_ALL := $(dir $(DEP_FILES))
-ifneq ($(DEP_DIR_ALL), )
-$(shell mkdir -p $(DEP_DIR_ALL))
-endif
 
 # by instructing make to read an external makefile with "include" it will 
 # search for the dependency files. It will see they do not exist but will also
@@ -116,5 +102,17 @@ endif
 # www.thanassis.space/makefile.html
 # make.mad-scientist.net/papers/advanced-auto-dependency-generation/
 ifneq ($(MAKECMDGOALS), clean)
+
 -include $(DEP_FILES)
+
+DIR_OBJ_ALL := $(dir $(OBJ_IMAGEVIEWER))
+ifneq ($(DIR_OBJ_ALL), )
+$(shell mkdir -p $(DIR_OBJ_ALL))
+endif
+
+DIR_DEP_ALL := $(dir $(DEP_IMAGEVIEWER))
+ifneq ($(DIR_DEP_ALL), )
+$(shell mkdir -p $(DIR_DEP_ALL))
+endif
+
 endif
