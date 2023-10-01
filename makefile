@@ -7,13 +7,14 @@
 MAKEFILE_DIR := $(abspath $(dir $(abspath $(firstword $(MAKEFILE_LIST)))))
 #$(info MAKEFILE_DIR="$(MAKEFILE_DIR)")
 
-EXE := pak
-SRC_DIR := $(MAKEFILE_DIR)/../src
-OUT := /tmp/pak/$(EXE)
-BIN := $(OUT)/bin
-EXE_PATH := $(BIN)/$(EXE)
-OBJ_DIR := $(OUT)/obj
-DEP_DIR := $(OUT)/obj
+# if the user have not provided a value, default to 'release'
+CFG ?= release
+
+DIR_SRC := $(MAKEFILE_DIR)/../src
+DIR_OUT ?= /tmp/imageviewer/${CFG}
+DIR_BIN := $(OUT)/bin
+DIR_OBJ := $(OUT)/obj
+DIR_DEP := $(OUT)/obj
 
 # number of processors (or 1, if nproc is not available)
 #PROCESSORCOUNT := $(shell nproc || printf 1)
@@ -45,8 +46,10 @@ endif
 
 CXX_DEP_FLAGS := -MMD 
 
+                   
+SRC_IMAGEVIEWER := \
+	../src/imageviewer/main.cpp
 
-SRC_FILE_NAMES := pak.cpp
 SRC_FILES =$(foreach f, $(SRC_FILE_NAMES), $(SRC_DIR)/$f)
 
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_FILES))
